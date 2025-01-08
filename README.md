@@ -4,3 +4,4 @@ The site is live --->
 https://chatty-1-nlgo.onrender.com/
 ```
 I used Websocket,React,Tailwind to create Chatty.
+Working on more features like sending Images,Videos,GIF and money.
