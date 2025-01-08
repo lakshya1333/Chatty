@@ -19,7 +19,7 @@ function App() {
 
     setMessages([`Hello, your room ID is: ${roomId}. You can share it with others to join this anonymous chatroom`]);
 
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket("https://chatty-hrhv.onrender.com");
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
