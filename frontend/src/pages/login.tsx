@@ -6,7 +6,7 @@ export function Login() {
   const ws = useRef();
 
   if (!ws.current) {
-    ws.current = new WebSocket("ws://localhost:8080");
+    ws.current = new WebSocket("https://chatty-hrhv.onrender.com");
   }
 
   function newroom() {
