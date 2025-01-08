@@ -5,7 +5,8 @@ import "./App.css";
 function App() {
   const [messages, setMessages] = useState<string[]>([]);
   const [error, setError] = useState("");
-  const wf = useRef();
+  const wf = useRef<WebSocket | null>(null);  // Type WebSocket
+  const messageInputRef = useRef<HTMLInputElement | null>(null);  // For input field
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
@@ -19,8 +20,8 @@ function App() {
 
     setMessages([`Hello, your room ID is: ${roomId}. You can share it with others to join this anonymous chatroom`]);
 
-    const ws = new WebSocket("https://chatty-hrhv.onrender.com");
-    ws.onmessage = (event) => {
+    const ws = new WebSocket("ws://localhost:8080");
+    ws.onmessage = (event: MessageEvent) => {  // Type the event parameter
       try {
         const data = JSON.parse(event.data);
     
@@ -59,45 +60,46 @@ function App() {
     };
   }, [roomId]);
 
+  const handleSendMessage = () => {
+    const message = messageInputRef.current?.value;  // Access input via useRef
+
+    if (message && wf.current?.readyState === WebSocket.OPEN) {
+      wf.current.send(
+        JSON.stringify({
+          type: "chat",
+          payload: {
+            message: message,
+          },
+        })
+      );
+    }
+  };
+
   return (
     <div className="h-screen bg-black">
       <br />
       {error ? (
         <div className="bg-red-500 text-white p-4 text-center">{error}</div>
       ) : (
-
         <>
           <div className="h-[90vh] overflow-y-auto flex flex-col items-start">
             {messages.map((message, index) => (
-              <div
-              key={index}
-              className="m-2 w-full flex"
-              >
-          <span
-            className="bg-white text-black rounded p-4 break-words max-w-[90%] w-fit"
-            >
-            {message}
-          </span>
-         </div>
-  ))}
-</div>
+              <div key={index} className="m-2 w-full flex">
+                <span className="bg-white text-black rounded p-4 break-words max-w-[90%] w-fit">
+                  {message}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <div className="w-full bg-white flex">
-            <input id="message" className="flex-1 p-4" type="text"></input>
+            <input
+              ref={messageInputRef} // Use the ref here for controlled input
+              className="flex-1 p-4"
+              type="text"
+            />
             <button
-              onClick={() => {
-                const message = document.getElementById("message")?.value;
-                if (wf.current?.readyState === WebSocket.OPEN) {
-                  wf.current.send(
-                    JSON.stringify({
-                      type: "chat",
-                      payload: {
-                        message: message,
-                      },
-                    })
-                  );
-                }
-              }}
+              onClick={handleSendMessage}
               className="bg-purple-600 text-white p-4"
             >
               Send Message
@@ -107,7 +109,6 @@ function App() {
       )}
     </div>
   );
-  
 }
 
 export default App;
