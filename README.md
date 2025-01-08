@@ -3,3 +3,4 @@ The site is live --->
 ```bash 
 https://chatty-1-nlgo.onrender.com/
 ```
+I used Websocket,React,Tailwind to create Chatty.
