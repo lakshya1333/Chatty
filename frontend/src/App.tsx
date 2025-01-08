@@ -5,8 +5,8 @@ import "./App.css";
 function App() {
   const [messages, setMessages] = useState<string[]>([]);
   const [error, setError] = useState("");
-  const wf = useRef<WebSocket | null>(null);  // Type WebSocket
-  const messageInputRef = useRef<HTMLInputElement | null>(null);  // For input field
+  const wf = useRef<WebSocket | null>(null);  
+  const messageInputRef = useRef<HTMLInputElement | null>(null); 
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
@@ -20,8 +20,8 @@ function App() {
 
     setMessages([`Hello, your room ID is: ${roomId}. You can share it with others to join this anonymous chatroom`]);
 
-    const ws = new WebSocket("ws://localhost:8080");
-    ws.onmessage = (event: MessageEvent) => {  // Type the event parameter
+    const ws = new WebSocket("https://chatty-hrhv.onrender.com");
+    ws.onmessage = (event: MessageEvent) => {  
       try {
         const data = JSON.parse(event.data);
     
@@ -61,7 +61,7 @@ function App() {
   }, [roomId]);
 
   const handleSendMessage = () => {
-    const message = messageInputRef.current?.value;  // Access input via useRef
+    const message = messageInputRef.current?.value; 
 
     if (message && wf.current?.readyState === WebSocket.OPEN) {
       wf.current.send(
@@ -94,7 +94,7 @@ function App() {
 
           <div className="w-full bg-white flex">
             <input
-              ref={messageInputRef} // Use the ref here for controlled input
+              ref={messageInputRef} 
               className="flex-1 p-4"
               type="text"
             />
