@@ -1,28 +1,36 @@
 import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 export function Login() {
   const navigate = useNavigate();
-  const ws = useRef();
+  const ws = useRef<WebSocket | null>(null); 
 
-  if (!ws.current) {
-    ws.current = new WebSocket("https://chatty-hrhv.onrender.com");
-  }
+  useEffect(() => {
+    if (!ws.current) {
+      ws.current = new WebSocket("ws://localhost:8080");
+    }
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []); 
 
   function newroom() {
-    ws.current.send(
-      JSON.stringify({
-        type: "createRoom",
-      })
-    );
+    if (ws.current) {
+      ws.current.send(
+        JSON.stringify({
+          type: "createRoom",
+        })
+      );
 
-    ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "roomCreated") {
-        const roomId = data.payload.roomId;
-        navigate(`/chat?roomId=${roomId}`)
-      }
-    };
+      ws.current.onmessage = (event: MessageEvent) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "roomCreated") {
+          const roomId = data.payload.roomId;
+          navigate(`/chat?roomId=${roomId}`);
+        }
+      };
+    }
   }
 
   return (
